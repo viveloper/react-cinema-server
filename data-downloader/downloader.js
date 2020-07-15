@@ -299,11 +299,11 @@ const getInvisibleMoviePlayInfo = async (
 };
 
 const getSeats = async (
-  cinemaId,
-  screenId,
   playDate,
-  playSequence,
-  screenDivisionCode
+  cinemaId,
+  screenDivisionCode,
+  screenId,
+  playSequence
 ) => {
   const requestBody = {
     paramList: JSON.stringify({
@@ -408,7 +408,6 @@ const startDownload = async () => {
   //   JSON.stringify(ticketingData)
   // );
   // console.log('ticketingData download complete.');
-
   // // download PlaySequence
   // const ticketingData = await getTicketingData();
   // for (
@@ -434,7 +433,6 @@ const startDownload = async () => {
   //       ) {
   //         const playDate = ticketingData.MoviePlayDates.Items.Items[k].PlayDate;
   //         const movieCode = '';
-
   //         const playSeqs = await getPlaySequence(
   //           playDate,
   //           divisionCode,
@@ -453,7 +451,6 @@ const startDownload = async () => {
   //     }
   //   }
   // }
-
   // // download InvisibleMoviePlayInfo
   // const ticketingData = await getTicketingData();
   // for (
@@ -479,7 +476,6 @@ const startDownload = async () => {
   //       ) {
   //         const playDate = ticketingData.MoviePlayDates.Items.Items[k].PlayDate;
   //         const movieCode = '';
-
   //         const invisibleMoviePlayInfo = await getInvisibleMoviePlayInfo(
   //           playDate,
   //           divisionCode,
@@ -498,10 +494,59 @@ const startDownload = async () => {
   //     }
   //   }
   // }
-
-  // getSeats
-  const seatsInfo = await getSeats(1004, 100406, '2020-07-16', 2, 100);
-  console.log(seatsInfo);
+  // // getSeats
+  // const ticketingData = await getTicketingData();
+  // for (
+  //   let i = 0;
+  //   i < ticketingData.CinemaDivison.AreaDivisions.Items.length;
+  //   i++
+  // ) {
+  //   const divisionCode =
+  //     ticketingData.CinemaDivison.AreaDivisions.Items[i].DivisionCode;
+  //   const detailDivisionCode =
+  //     ticketingData.CinemaDivison.AreaDivisions.Items[i].DetailDivisionCode;
+  //   for (let j = 0; j < ticketingData.Cinemas.Cinemas.Items.length; j++) {
+  //     if (
+  //       ticketingData.Cinemas.Cinemas.Items[j].DivisionCode === divisionCode &&
+  //       ticketingData.Cinemas.Cinemas.Items[j].DetailDivisionCode ===
+  //         detailDivisionCode
+  //     ) {
+  //       const cinemaId = ticketingData.Cinemas.Cinemas.Items[j].CinemaID;
+  //       for (
+  //         let k = 0;
+  //         k < ticketingData.MoviePlayDates.Items.Items.length;
+  //         k++
+  //       ) {
+  //         const playDate = ticketingData.MoviePlayDates.Items.Items[k].PlayDate;
+  //         const movieCode = '';
+  //         const playSeqs = await getPlaySequence(
+  //           playDate,
+  //           divisionCode,
+  //           detailDivisionCode,
+  //           cinemaId,
+  //           movieCode
+  //         );
+  //         for (let m = 0; m < playSeqs.PlaySeqs.Items.length; m++) {
+  //           const playSeq = playSeqs.PlaySeqs.Items[m];
+  //           const seatsInfo = await getSeats(
+  //             playSeq.PlayDt,
+  //             playSeq.CinemaID,
+  //             playSeq.ScreenDivisionCode,
+  //             playSeq.ScreenID,
+  //             playSeq.PlaySequence
+  //           );
+  //           fs.writeFileSync(
+  //             `./data/ticketing/seats/seatsInfo-${playSeq.PlayDt}-${playSeq.CinemaID}-${playSeq.ScreenDivisionCode}-${playSeq.ScreenID}-${playSeq.PlaySequence}.json`,
+  //             JSON.stringify(seatsInfo)
+  //           );
+  //           console.log(
+  //             `seatsInfo-${playSeq.PlayDt}-${playSeq.CinemaID}-${playSeq.ScreenDivisionCode}-${playSeq.ScreenID}-${playSeq.PlaySequence} download complete.`
+  //           );
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 };
 
 startDownload();

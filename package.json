@@ -1,0 +1,23 @@
+{
+  "name": "react-cinema-server",
+  "version": "1.0.0",
+  "description": "\"# react-cinema-server\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viveloper/react-cinema-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/viveloper/react-cinema-server/issues"
+  },
+  "homepage": "https://github.com/viveloper/react-cinema-server#readme",
+  "dependencies": {
+    "axios": "^0.19.2"
+  }
+}

@@ -2,14 +2,17 @@ const axios = require('axios');
 const qs = require('querystring');
 const fs = require('fs');
 
+// const osVersion = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36';
+const osVersion =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36';
+
 const getCinemaData = async () => {
   const requestBody = {
     paramList: JSON.stringify({
       MethodName: 'GetSepcialBannerInMain',
       channelType: 'HO',
       osType: 'W',
-      osVersion:
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+      osVersion,
       multiLanguageId: 'KR',
     }),
   };
@@ -32,8 +35,7 @@ const getMovie = async () => {
   const data = {
     channelType: 'HO',
     osType: 'W',
-    osVersion:
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+    osVersion,
     multiLanguageId: 'KR',
     data: { memberNoOn: '0' },
   };
@@ -52,8 +54,7 @@ const getMovieList = async (type) => {
         MethodName: 'GetMoviesToBe',
         channelType: 'HO',
         osType: 'Chrome',
-        osVersion:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+        osVersion,
         multiLanguageID: 'KR',
         division: 1,
         moviePlayYN: 'Y',
@@ -68,8 +69,7 @@ const getMovieList = async (type) => {
         MethodName: 'GetMoviesToBe',
         channelType: 'HO',
         osType: 'Chrome',
-        osVersion:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+        osVersion,
         multiLanguageID: 'KR',
         division: 1,
         moviePlayYN: 'N',
@@ -84,8 +84,7 @@ const getMovieList = async (type) => {
         MethodName: 'GetMoviesToBe',
         channelType: 'HO',
         osType: 'Chrome',
-        osVersion:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+        osVersion,
         multiLanguageID: 'KR',
         division: 2,
         moviePlayYN: '',
@@ -101,8 +100,7 @@ const getMovieList = async (type) => {
         MethodName: 'GetMoviesByOpera',
         channelType: 'HO',
         osType: 'Chrome',
-        osVersion:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+        osVersion,
         multiLanguageID: 'KR',
         blockSize: 100,
         pageNo: 1,
@@ -115,8 +113,7 @@ const getMovieList = async (type) => {
         MethodName: 'GetFestivals',
         channelType: 'HO',
         osType: 'Chrome',
-        osVersion:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+        osVersion,
         multiLanguageID: 'KR',
         memberOnNo: '',
       }),
@@ -143,8 +140,7 @@ const getMovieDetail = async (movieCode) => {
       MethodName: 'GetMovieDetailTOBE',
       channelType: 'HO',
       osType: 'Chrome',
-      osVersion:
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+      osVersion,
       multiLanguageID: 'KR',
       representationMovieCode: movieCode,
       memberOnNo: '',
@@ -171,8 +167,7 @@ const getMovieReview = async (movieCode, count) => {
       MethodName: 'GetReviews',
       channelType: 'HO',
       osType: 'Chrome',
-      osVersion:
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+      osVersion,
       representationMovieCode: movieCode,
       memberID: '',
       realReviewYN: 'Y',
@@ -201,8 +196,7 @@ const getMovieCastInfo = async (movieCode) => {
     MethodName: 'getMovieCastInfo',
     channelType: 'HO',
     osType: 'Chrome',
-    osVersion:
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+    osVersion,
     multiLanguageID: 'KR',
     data: { representationMovieCode: movieCode },
   };
@@ -219,8 +213,7 @@ const getTicketingData = async () => {
       MethodName: 'GetTicketingPageTOBE',
       channelType: 'HO',
       osType: 'W',
-      osVersion:
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+      osVersion,
       memberOnNo: '0',
     }),
   };
@@ -251,8 +244,7 @@ const getPlaySequence = async (
       MethodName: 'GetPlaySequence',
       channelType: 'HO',
       osType: 'W',
-      osVersion:
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+      osVersion,
       playDate: playDate,
       cinemaID: `${divisionCode}|${detailDivisionCode}|${cinemaId}`,
       representationMovieCode: movieCode,
@@ -285,11 +277,45 @@ const getInvisibleMoviePlayInfo = async (
       MethodName: 'GetInvisibleMoviePlayInfo',
       channelType: 'HO',
       osType: 'W',
-      osVersion:
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+      osVersion,
       cinemaList: `${divisionCode}|${detailDivisionCode}|${cinemaId}`,
       movieCd: movieCode,
       playDt: playDate,
+    }),
+  };
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  };
+
+  const res = await axios.post(
+    'https://www.lottecinema.co.kr/LCWS/Ticketing/TicketingData.aspx',
+    qs.stringify(requestBody),
+    config
+  );
+  return res.data;
+};
+
+const getSeats = async (
+  cinemaId,
+  screenId,
+  playDate,
+  playSequence,
+  screenDivisionCode
+) => {
+  const requestBody = {
+    paramList: JSON.stringify({
+      MethodName: 'GetSeats',
+      channelType: 'HO',
+      osType: 'W',
+      osVersion,
+      cinemaId,
+      screenId,
+      playDate,
+      playSequence,
+      screenDivisionCode,
     }),
   };
 
@@ -428,50 +454,54 @@ const startDownload = async () => {
   //   }
   // }
 
-  // download InvisibleMoviePlayInfo
-  const ticketingData = await getTicketingData();
-  for (
-    let i = 0;
-    i < ticketingData.CinemaDivison.AreaDivisions.Items.length;
-    i++
-  ) {
-    const divisionCode =
-      ticketingData.CinemaDivison.AreaDivisions.Items[i].DivisionCode;
-    const detailDivisionCode =
-      ticketingData.CinemaDivison.AreaDivisions.Items[i].DetailDivisionCode;
-    for (let j = 0; j < ticketingData.Cinemas.Cinemas.Items.length; j++) {
-      if (
-        ticketingData.Cinemas.Cinemas.Items[j].DivisionCode === divisionCode &&
-        ticketingData.Cinemas.Cinemas.Items[j].DetailDivisionCode ===
-          detailDivisionCode
-      ) {
-        const cinemaId = ticketingData.Cinemas.Cinemas.Items[j].CinemaID;
-        for (
-          let k = 0;
-          k < ticketingData.MoviePlayDates.Items.Items.length;
-          k++
-        ) {
-          const playDate = ticketingData.MoviePlayDates.Items.Items[k].PlayDate;
-          const movieCode = '';
+  // // download InvisibleMoviePlayInfo
+  // const ticketingData = await getTicketingData();
+  // for (
+  //   let i = 0;
+  //   i < ticketingData.CinemaDivison.AreaDivisions.Items.length;
+  //   i++
+  // ) {
+  //   const divisionCode =
+  //     ticketingData.CinemaDivison.AreaDivisions.Items[i].DivisionCode;
+  //   const detailDivisionCode =
+  //     ticketingData.CinemaDivison.AreaDivisions.Items[i].DetailDivisionCode;
+  //   for (let j = 0; j < ticketingData.Cinemas.Cinemas.Items.length; j++) {
+  //     if (
+  //       ticketingData.Cinemas.Cinemas.Items[j].DivisionCode === divisionCode &&
+  //       ticketingData.Cinemas.Cinemas.Items[j].DetailDivisionCode ===
+  //         detailDivisionCode
+  //     ) {
+  //       const cinemaId = ticketingData.Cinemas.Cinemas.Items[j].CinemaID;
+  //       for (
+  //         let k = 0;
+  //         k < ticketingData.MoviePlayDates.Items.Items.length;
+  //         k++
+  //       ) {
+  //         const playDate = ticketingData.MoviePlayDates.Items.Items[k].PlayDate;
+  //         const movieCode = '';
 
-          const invisibleMoviePlayInfo = await getInvisibleMoviePlayInfo(
-            playDate,
-            divisionCode,
-            detailDivisionCode,
-            cinemaId,
-            movieCode
-          );
-          fs.writeFileSync(
-            `./data/ticketing/invisibleMoviePlayInfo/invisibleMoviePlayInfo-${playDate}-${divisionCode}-${detailDivisionCode}-${cinemaId}.json`,
-            JSON.stringify(invisibleMoviePlayInfo)
-          );
-          console.log(
-            `invisibleMoviePlayInfo-${playDate}-${divisionCode}-${detailDivisionCode}-${cinemaId} download complete.`
-          );
-        }
-      }
-    }
-  }
+  //         const invisibleMoviePlayInfo = await getInvisibleMoviePlayInfo(
+  //           playDate,
+  //           divisionCode,
+  //           detailDivisionCode,
+  //           cinemaId,
+  //           movieCode
+  //         );
+  //         fs.writeFileSync(
+  //           `./data/ticketing/invisibleMoviePlayInfo/invisibleMoviePlayInfo-${playDate}-${divisionCode}-${detailDivisionCode}-${cinemaId}.json`,
+  //           JSON.stringify(invisibleMoviePlayInfo)
+  //         );
+  //         console.log(
+  //           `invisibleMoviePlayInfo-${playDate}-${divisionCode}-${detailDivisionCode}-${cinemaId} download complete.`
+  //         );
+  //       }
+  //     }
+  //   }
+  // }
+
+  // getSeats
+  const seatsInfo = await getSeats(1004, 100406, '2020-07-16', 2, 100);
+  console.log(seatsInfo);
 };
 
 startDownload();

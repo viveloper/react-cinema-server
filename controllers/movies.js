@@ -7,19 +7,39 @@ const path = require('path');
 exports.getMovies = (req, res, next) => {
   let sourceDataPath = '';
   if (req.query.type === 'current') {
-    sourceDataPath = '../data/movies/currentMovieList.json';
+    sourceDataPath = '../data/home/movies.json';
+    const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+    const movies = JSON.parse(jsonData);
+    res
+      .status(200)
+      .json(
+        movies.Movies.Items[0].Items.filter((item) => item.MoviePlayYN === 'Y')
+      );
   } else if (req.query.type === 'pre') {
-    sourceDataPath = '../data/movies/preMovieList.json';
+    sourceDataPath = '../data/home/movies.json';
+    const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+    const movies = JSON.parse(jsonData);
+    res
+      .status(200)
+      .json(
+        movies.Movies.Items[0].Items.filter((item) => item.MoviePlayYN === 'N')
+      );
   } else if (req.query.type === 'arte') {
     sourceDataPath = '../data/movies/arteMovieList.json';
+    const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+    const movies = JSON.parse(jsonData);
+    res.status(200).json(movies.Movies.Items);
   } else if (req.query.type === 'opera') {
     sourceDataPath = '../data/movies/operaMovieList.json';
+    const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+    const movies = JSON.parse(jsonData);
+    res.status(200).json(movies.Movies.Items);
   } else {
     sourceDataPath = '../data/home/movies.json';
+    const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+    const movies = JSON.parse(jsonData);
+    res.status(200).json(movies.Movies.Items[0].Items);
   }
-  const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
-  const movies = JSON.parse(jsonData);
-  res.status(200).json(movies);
 };
 
 // @desc    Get movie detail

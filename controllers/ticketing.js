@@ -52,16 +52,18 @@ exports.getPlaySequence = (req, res, next) => {
   res.status(200).json(filteredPlaySequence);
 };
 
-// @desc    Get invisible movie play info
-// @route   GET /api/ticketing/invisibleMoviePlayInfo
-// @access  Public
-exports.getInvisibleMoviePlayInfo = (req, res, next) => {
-  res.status(200).json({});
-};
-
 // @desc    Get seats
 // @route   GET /api/ticketing/seats
 // @access  Public
 exports.getSeats = (req, res, next) => {
-  res.status(200).json({});
+  const playDate = req.query.playDate;
+  const cinemaId = req.query.cinemaId;
+  const screenDivisionCode = req.query.screenDivisionCode;
+  const screenId = req.query.screenId;
+  const playSequence = req.query.playSequence;
+
+  const sourceDataPath = `../data/ticketing/seats/seatsInfo-${playDate}-${cinemaId}-${screenDivisionCode}-${screenId}-${playSequence}.json`;
+  const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+  const seats = JSON.parse(jsonData);
+  res.status(200).json(seats);
 };

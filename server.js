@@ -17,12 +17,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 const movies = require('./routes/movies');
 const review = require('./routes/review');
 const ticketing = require('./routes/ticketing');
+const carousel = require('./routes/carousel');
 const specials = require('./routes/specials');
 
 // Mount routers
 app.use('/api/movies', movies);
 app.use('/api/review', review);
 app.use('/api/ticketing', ticketing);
+app.use('/api/carousel', carousel);
 app.use('/api/specials', specials);
 
 const PORT = process.env.PORT || 5000;

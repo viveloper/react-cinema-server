@@ -42,3 +42,10 @@ exports.getReview = (req, res, next) => {
 
   res.status(200).json(pagedReview);
 };
+
+// @desc    Post review
+// @route   GET /api/review
+// @access  Public
+exports.postReview = (req, res, next) => {
+  res.status(200).json({ success: true });
+};

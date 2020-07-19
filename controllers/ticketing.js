@@ -67,3 +67,79 @@ exports.getSeats = (req, res, next) => {
   const seats = JSON.parse(jsonData);
   res.status(200).json(seats);
 };
+
+// @desc    Reserve seats
+// @route   PUT /api/ticketing/seats
+// @access  Private
+exports.reserveSeats = (req, res, next) => {
+  const playDate = req.query.playDate;
+  const cinemaId = req.query.cinemaId;
+  const screenDivisionCode = req.query.screenDivisionCode;
+  const screenId = req.query.screenId;
+  const playSequence = req.query.playSequence;
+
+  const { seatNoList } = req.body;
+
+  const loginUser = req.user;
+
+  const sourceDataPath = `../data/ticketing/seats/seatsInfo-${playDate}-${cinemaId}-${screenDivisionCode}-${screenId}-${playSequence}.json`;
+  const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+  const seatsData = JSON.parse(jsonData);
+
+  seatNoList.forEach((seatNo) => {
+    // Seats update
+    const targetSeat = seatsData.Seats.Items.find(
+      (seat) => seat.SeatNo === seatNo
+    );
+    targetSeat.SeatStatusCode = 50;
+
+    // BookingSeats update
+    seatsData.BookingSeats.Items.push({
+      SeatNo: targetSeat.SeatNo,
+      SeatRow: targetSeat.SeatRow,
+      SeatColumn: targetSeat.SeatColumn,
+      SeatColumnGroupNo: targetSeat.SeatColumGroupNo,
+      ShowSeatRow: targetSeat.ShowSeatRow,
+      ShowSeatColumn: targetSeat.ShowSeatColumn,
+    });
+  });
+
+  fs.writeFileSync(
+    path.resolve(__dirname, sourceDataPath),
+    JSON.stringify(seatsData)
+  );
+
+  // User ticketing data update
+  const jsonUserData = fs.readFileSync(
+    path.resolve(__dirname, '../data/users/users.json')
+  );
+  const usersData = JSON.parse(jsonUserData);
+  const targetUser = usersData.users.find(
+    (user) => user.email === loginUser.email
+  );
+
+  const ticketingResult = {
+    playDate,
+    cinemaId,
+    screenDivisionCode,
+    screenId,
+    playSequence,
+    seatNoList,
+  };
+
+  if (!targetUser.ticketing) {
+    targetUser.ticketingList = [ticketingResult];
+  } else {
+    targetUser.ticketingList.push(ticketingResult);
+  }
+
+  fs.writeFileSync(
+    path.resolve(__dirname, '../data/users/users.json'),
+    JSON.stringify(usersData)
+  );
+
+  res.status(200).json({
+    success: true,
+    ticketing: ticketingResult,
+  });
+};

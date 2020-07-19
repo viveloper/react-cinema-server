@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { getRandomInt } = require('../utils');
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -17,12 +18,18 @@ exports.register = async (req, res, next) => {
   } else {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
-    usersData.users.push({ name, email, password: hash });
+    const id = getRandomInt(100000000, 1000000000).toString();
+    usersData.users.push({
+      id,
+      name,
+      email,
+      password: hash,
+    });
     fs.writeFileSync(
       path.resolve(__dirname, '../data/users/users.json'),
       JSON.stringify(usersData)
     );
-    const token = getToken({ name, email });
+    const token = getToken({ id, name, email });
     res.status(200).json({ success: true, token });
   }
 };
@@ -51,7 +58,7 @@ exports.login = async (req, res, next) => {
       .status(401)
       .json({ success: false, error: 'Invalid credentials(wrong password)' });
 
-  const token = getToken({ name: user.name, email: user.email });
+  const token = getToken({ id: user.id, name: user.name, email: user.email });
   res.status(200).json({ success: true, token });
 };
 

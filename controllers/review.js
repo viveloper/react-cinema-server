@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const { getRandomInt } = require('../utils');
 
 // @desc    Get review
 // @route   GET /api/review
@@ -45,7 +47,69 @@ exports.getReview = (req, res, next) => {
 
 // @desc    Post review
 // @route   GET /api/review
-// @access  Public
+// @access  Private
 exports.postReview = (req, res, next) => {
-  res.status(200).json({ success: true });
+  const { movieCode, reviewText, evaluation } = req.body;
+  const loginUser = req.user;
+
+  const sourceDataPath = `../data/movieDetail/${movieCode}-review.json`;
+  const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+  const reviewData = JSON.parse(jsonData);
+
+  const reviewId = getRandomInt(10000000, 1000000000);
+
+  const newReview = {
+    ReviewID: reviewId,
+    MemberNo: parseInt(loginUser.id),
+    MemberID: loginUser.id,
+    MemberName: loginUser.name,
+    ReviewText: reviewText,
+    MoviePlayYN: '',
+    Evaluation: evaluation,
+    RecommandCount: 0,
+    MovieViewYN: '',
+    RepresentationMovieCode: movieCode,
+    MemberRecommandYN: '',
+    RegistDate: new Date().toISOString().slice(0, 10).split('-').join('.'),
+    ProfilePhoto: '',
+    MemberNickName: '',
+  };
+
+  const reviewCount = reviewData.TotalReviewItems.Items.length;
+
+  reviewData.TotalReviewItems.Items.unshift(newReview);
+  reviewData.TotalReviewItems.ItemCount = reviewCount;
+  reviewData.ReviewCounts.RealReviewCount = reviewCount;
+  reviewData.ReviewCounts.TotalReviewCount = reviewCount;
+  reviewData.ReviewCounts.MarkAvg = Math.floor(
+    reviewData.TotalReviewItems.Items.reduce(
+      (acc, review) => acc + review.Evaluation,
+      0
+    ) / reviewCount
+  );
+
+  fs.writeFileSync(
+    path.resolve(__dirname, sourceDataPath),
+    JSON.stringify(reviewData)
+  );
+
+  const jsonUserData = fs.readFileSync(
+    path.resolve(__dirname, '../data/users/users.json')
+  );
+  const usersData = JSON.parse(jsonUserData);
+  const targetUser = usersData.users.find(
+    (user) => user.email === loginUser.email
+  );
+  if (!targetUser.reviewList) {
+    targetUser.reviewList = [reviewId];
+  } else {
+    targetUser.reviewList.push(reviewId);
+  }
+
+  fs.writeFileSync(
+    path.resolve(__dirname, '../data/users/users.json'),
+    JSON.stringify(usersData)
+  );
+
+  res.status(200).json({ success: true, review: newReview });
 };

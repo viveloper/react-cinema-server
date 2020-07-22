@@ -122,9 +122,37 @@ async function movieDetailMediaDownload() {
   }
 }
 
+// async function movieDetailPosterDownload() {
+//   const jsonMovies = fs.readFileSync('./data/home/movies.json');
+//   const { Movies } = JSON.parse(jsonMovies);
+//   const movies = Movies.Items[0].Items.filter(
+//     (movie) => movie.RepresentationMovieCode !== 'AD'
+//   );
+//   const movieCodeList = movies
+//     .map((movie) => movie.RepresentationMovieCode)
+//     .filter((movieCode) => !!movieCode);
+//   try {
+//     for (let i = 0; i < movieCodeList.length; i++) {
+//       const movieCode = movieCodeList[i];
+//       const jsonMovieDetail = fs.readFileSync(
+//         `./data/movieDetail/${movieCode}.json`
+//       );
+//       const { Movie } = JSON.parse(jsonMovieDetail);
+//       const url = 'http://caching.lottecinema.co.kr/' + Movie.PosterURL;
+//       const dest = `./${url.split('//')[2]}`;
+//       await createDirectories(dest);
+//       await download(url, dest);
+//       console.log(`${dest} download complete.`);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
 const startDownload = async () => {
   await moviePosterDownload();
   await movieDetailMediaDownload();
+  // await movieDetailPosterDownload();
 };
 
 startDownload();

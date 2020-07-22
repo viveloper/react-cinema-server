@@ -14,7 +14,9 @@ exports.register = async (req, res, next) => {
   );
   const usersData = JSON.parse(jsonData);
   if (usersData.users.find((user) => user.email === email)) {
-    res.status(200).json({ success: false, error: 'exist user' });
+    res
+      .status(400)
+      .json({ success: false, message: '이미 가입된 이메일입니다.' });
   } else {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
@@ -55,17 +57,20 @@ exports.login = async (req, res, next) => {
   const user = usersData.users.find((user) => user.email === email);
 
   if (!email || !password)
-    return res
-      .status(400)
-      .json({ success: false, error: 'Please provide an email and password' });
+    return res.status(400).json({
+      success: false,
+      message: '이메일과 비밀번호를 입력하세요.',
+    });
   if (!user)
-    return res
-      .status(401)
-      .json({ success: false, error: 'Invalid credentials(not exist email)' });
+    return res.status(401).json({
+      success: false,
+      message: '존재하지 않는 이메일입니다.',
+    });
   if (!(await matchPassword(password, user.password)))
-    return res
-      .status(401)
-      .json({ success: false, error: 'Invalid credentials(wrong password)' });
+    return res.status(401).json({
+      success: false,
+      message: '잘못된 비밀번호입니다.',
+    });
 
   const token = getToken({ id: user.id, name: user.name, email: user.email });
   res.status(200).json({

@@ -15,9 +15,15 @@ exports.protect = async (req, res, next) => {
       };
       next();
     } catch (e) {
-      next(new Error(e.message));
+      res.status(401).json({
+        success: false,
+        message: e.message,
+      });
     }
   } else {
-    return next(new Error('Not authorize to access this route'));
+    res.status(401).json({
+      success: false,
+      message: 'Not authorize to access this route',
+    });
   }
 };

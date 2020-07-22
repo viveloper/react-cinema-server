@@ -30,7 +30,16 @@ exports.register = async (req, res, next) => {
       JSON.stringify(usersData)
     );
     const token = getToken({ id, name, email });
-    res.status(200).json({ success: true, token });
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        name,
+        email,
+        reviewList: [],
+        ticketingList: [],
+      },
+    });
   }
 };
 
@@ -59,7 +68,16 @@ exports.login = async (req, res, next) => {
       .json({ success: false, error: 'Invalid credentials(wrong password)' });
 
   const token = getToken({ id: user.id, name: user.name, email: user.email });
-  res.status(200).json({ success: true, token });
+  res.status(200).json({
+    success: true,
+    token,
+    user: {
+      name: user.name,
+      email: user.email,
+      reviewList: user.reviewList,
+      ticketingList: user.ticketingList,
+    },
+  });
 };
 
 function getToken(payload) {

@@ -1,9 +1,17 @@
 const express = require('express');
-const { getReview, postReview } = require('../controllers/review');
+const {
+  getReview,
+  postReview,
+  deleteReview,
+} = require('../controllers/review');
 const { protect } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.route('/').get(getReview).post(protect, postReview);
+router
+  .route('/')
+  .get(getReview)
+  .post(protect, postReview)
+  .delete(protect, deleteReview);
 
 module.exports = router;

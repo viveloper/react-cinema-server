@@ -100,11 +100,8 @@ exports.postReview = (req, res, next) => {
   const targetUser = usersData.users.find(
     (user) => user.email === loginUser.email
   );
-  if (!targetUser.reviewList) {
-    targetUser.reviewList = [reviewId];
-  } else {
-    targetUser.reviewList.push(reviewId);
-  }
+
+  targetUser.reviewList.push(reviewId);
 
   fs.writeFileSync(
     path.resolve(__dirname, '../data/users/users.json'),
@@ -112,4 +109,64 @@ exports.postReview = (req, res, next) => {
   );
 
   res.status(200).json({ success: true, review: newReview });
+};
+
+// @desc    Delete review
+// @route   DELETE /api/review
+// @access  Private
+exports.deleteReview = (req, res, next) => {
+  const { movieCode, reviewId } = req.body;
+  const loginUser = req.user;
+
+  const sourceDataPath = `../data/movieDetail/${movieCode}-review.json`;
+  const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+  const reviewData = JSON.parse(jsonData);
+  const targetReview = reviewData.TotalReviewItems.Items.find(
+    (item) => item.ReviewID === reviewId
+  );
+  if (targetReview.MemberID !== loginUser.id) {
+    return res.status(401).json({
+      success: false,
+      message: 'Not authorized user',
+    });
+  }
+
+  const idx = reviewData.TotalReviewItems.Items.indexOf(targetReview);
+  reviewData.TotalReviewItems.Items.splice(idx, 1);
+
+  const reviewCount = reviewData.TotalReviewItems.Items.length;
+
+  reviewData.TotalReviewItems.ItemCount = reviewCount;
+  reviewData.ReviewCounts.RealReviewCount = reviewCount;
+  reviewData.ReviewCounts.TotalReviewCount = reviewCount;
+  reviewData.ReviewCounts.MarkAvg = Math.floor(
+    reviewData.TotalReviewItems.Items.reduce(
+      (acc, review) => acc + review.Evaluation,
+      0
+    ) / reviewCount
+  );
+
+  fs.writeFileSync(
+    path.resolve(__dirname, sourceDataPath),
+    JSON.stringify(reviewData)
+  );
+
+  const jsonUserData = fs.readFileSync(
+    path.resolve(__dirname, '../data/users/users.json')
+  );
+  const usersData = JSON.parse(jsonUserData);
+  const targetUser = usersData.users.find(
+    (user) => user.email === loginUser.email
+  );
+
+  targetUser.reviewList = targetUser.reviewList.filter(
+    (item) => item !== reviewId
+  );
+
+  fs.writeFileSync(
+    path.resolve(__dirname, '../data/users/users.json'),
+    JSON.stringify(usersData)
+  );
+
+  res.status(200).json({ success: true, review: targetReview });
 };

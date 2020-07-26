@@ -39,6 +39,7 @@ exports.register = async (req, res, next) => {
         name,
         email,
         reviewList: [],
+        reviewLikeList: [],
         ticketingList: [],
       },
     });
@@ -80,6 +81,7 @@ exports.login = async (req, res, next) => {
       name: user.name,
       email: user.email,
       reviewList: user.reviewList,
+      reviewLikeList: user.reviewLikeList,
       ticketingList: user.ticketingList,
     },
   });

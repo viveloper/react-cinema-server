@@ -9,10 +9,10 @@ const { protect, optionalProtected } = require('../middleware/auth');
 
 const router = express.Router();
 
+router.route('/').get(optionalProtected, getReview).post(protect, addReview);
+
 router
-  .route('/')
-  .get(optionalProtected, getReview)
-  .post(protect, addReview)
+  .route('/:reviewId')
   .delete(protect, deleteReview)
   .put(protect, editReview);
 

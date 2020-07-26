@@ -72,7 +72,7 @@ exports.addReview = (req, res, next) => {
     (item) => item.MemberID === loginUser.id
   );
   if (userReview) {
-    return res.status(400).json({
+    return res.status(409).json({
       success: false,
       message: '실관람평이 존재합니다. 확인해주세요.',
     });
@@ -136,7 +136,8 @@ exports.addReview = (req, res, next) => {
 // @route   DELETE /api/review
 // @access  Private
 exports.deleteReview = (req, res, next) => {
-  const { movieCode, reviewId } = req.body;
+  const reviewId = parseInt(req.params.reviewId);
+  const { movieCode } = req.body;
   const loginUser = req.user;
 
   const sourceDataPath = `../data/movieDetail/${movieCode}-review.json`;
@@ -194,8 +195,8 @@ exports.deleteReview = (req, res, next) => {
 // @route   PUT /api/review
 // @access  Private
 exports.editReview = (req, res, next) => {
-  const { movieCode, reviewId, reviewText, evaluation } = req.body;
-  const loginUser = req.user;
+  const reviewId = parseInt(req.params.reviewId);
+  const { movieCode, reviewText, evaluation, recommend } = req.body;
 
   const sourceDataPath = `../data/movieDetail/${movieCode}-review.json`;
   const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
@@ -205,8 +206,39 @@ exports.editReview = (req, res, next) => {
     (item) => item.ReviewID === reviewId
   );
 
-  targetReview.ReviewText = reviewText;
-  targetReview.Evaluation = evaluation;
+  targetReview.ReviewText = reviewText ? reviewText : targetReview.ReviewText;
+  targetReview.Evaluation = evaluation ? evaluation : targetReview.Evaluation;
+  if (recommend) {
+    const loginUser = req.user;
+
+    const jsonUserData = fs.readFileSync(
+      path.resolve(__dirname, '../data/users/users.json')
+    );
+    const usersData = JSON.parse(jsonUserData);
+    const targetUser = usersData.users.find(
+      (user) => user.email === loginUser.email
+    );
+
+    const isLiked = targetUser.reviewLikeList.includes(reviewId);
+
+    targetReview.RecommandCount = isLiked
+      ? targetReview.RecommandCount - 1
+      : targetReview.RecommandCount + 1;
+
+    if (isLiked) {
+      targetUser.reviewLikeList = targetUser.reviewLikeList.filter(
+        (item) => item !== reviewId
+      );
+    } else {
+      targetUser.reviewLikeList.push(reviewId);
+    }
+
+    fs.writeFileSync(
+      path.resolve(__dirname, '../data/users/users.json'),
+      JSON.stringify(usersData)
+    );
+  }
+
   reviewData.ReviewCounts.MarkAvg = Math.floor(
     reviewData.TotalReviewItems.Items.reduce(
       (acc, review) => acc + review.Evaluation,
@@ -221,3 +253,7 @@ exports.editReview = (req, res, next) => {
 
   res.status(200).json({ success: true, review: targetReview });
 };
+
+// @desc    Recommend review
+// @route   PUT /api/review
+// @access  Private

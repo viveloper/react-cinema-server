@@ -1,8 +1,9 @@
 const express = require('express');
 const {
   getReview,
-  postReview,
+  addReview,
   deleteReview,
+  editReview,
 } = require('../controllers/review');
 const { protect } = require('../middleware/auth');
 
@@ -11,7 +12,8 @@ const router = express.Router();
 router
   .route('/')
   .get(getReview)
-  .post(protect, postReview)
-  .delete(protect, deleteReview);
+  .post(protect, addReview)
+  .delete(protect, deleteReview)
+  .put(protect, editReview);
 
 module.exports = router;

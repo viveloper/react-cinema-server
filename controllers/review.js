@@ -48,7 +48,7 @@ exports.getReview = (req, res, next) => {
 // @desc    Post review
 // @route   GET /api/review
 // @access  Private
-exports.postReview = (req, res, next) => {
+exports.addReview = (req, res, next) => {
   const { movieCode, reviewText, evaluation } = req.body;
   const loginUser = req.user;
 
@@ -163,6 +163,44 @@ exports.deleteReview = (req, res, next) => {
   fs.writeFileSync(
     path.resolve(__dirname, '../data/users/users.json'),
     JSON.stringify(usersData)
+  );
+
+  res.status(200).json({ success: true, review: targetReview });
+};
+
+// @desc    Edit review
+// @route   PUT /api/review
+// @access  Private
+exports.editReview = (req, res, next) => {
+  const { movieCode, reviewId, reviewText, evaluation } = req.body;
+  const loginUser = req.user;
+
+  const sourceDataPath = `../data/movieDetail/${movieCode}-review.json`;
+  const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
+  const reviewData = JSON.parse(jsonData);
+
+  const targetReview = reviewData.TotalReviewItems.Items.find(
+    (item) => item.ReviewID === reviewId
+  );
+
+  targetReview.ReviewText = reviewText;
+  targetReview.Evaluation = evaluation;
+  targetReview.RegistDate = new Date()
+    .toISOString()
+    .slice(0, 10)
+    .split('-')
+    .join('.');
+
+  reviewData.ReviewCounts.MarkAvg = Math.floor(
+    reviewData.TotalReviewItems.Items.reduce(
+      (acc, review) => acc + review.Evaluation,
+      0
+    ) / reviewData.TotalReviewItems.Items.length
+  );
+
+  fs.writeFileSync(
+    path.resolve(__dirname, sourceDataPath),
+    JSON.stringify(reviewData)
   );
 
   res.status(200).json({ success: true, review: targetReview });

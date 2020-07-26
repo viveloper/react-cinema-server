@@ -5,13 +5,13 @@ const {
   deleteReview,
   editReview,
 } = require('../controllers/review');
-const { protect } = require('../middleware/auth');
+const { protect, optionalProtected } = require('../middleware/auth');
 
 const router = express.Router();
 
 router
   .route('/')
-  .get(getReview)
+  .get(optionalProtected, getReview)
   .post(protect, addReview)
   .delete(protect, deleteReview)
   .put(protect, editReview);

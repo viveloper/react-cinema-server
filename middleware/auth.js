@@ -27,3 +27,27 @@ exports.protect = async (req, res, next) => {
     });
   }
 };
+
+exports.optionalProtected = async (req, res, next) => {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    const token = req.headers.authorization.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = {
+        id: decoded.id,
+        name: decoded.name,
+        email: decoded.email,
+      };
+      next();
+    } catch (e) {
+      req.user = null;
+      next();
+    }
+  } else {
+    req.user = null;
+    next();
+  }
+};

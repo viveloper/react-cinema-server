@@ -28,6 +28,18 @@ exports.getReview = (req, res, next) => {
     },
   };
 
+  const loginUser = req.user;
+  if (loginUser) {
+    const userReview = sortedReview.TotalReviewItems.Items.find(
+      (item) => item.MemberID === loginUser.id
+    );
+    if (userReview) {
+      const idx = sortedReview.TotalReviewItems.Items.indexOf(userReview);
+      sortedReview.TotalReviewItems.Items.splice(idx, 1);
+      sortedReview.TotalReviewItems.Items.unshift(userReview);
+    }
+  }
+
   const begin = count * (page - 1);
   const end =
     count * page < sortedReview.TotalReviewItems.Items.length
@@ -55,6 +67,16 @@ exports.addReview = (req, res, next) => {
   const sourceDataPath = `../data/movieDetail/${movieCode}-review.json`;
   const jsonData = fs.readFileSync(path.resolve(__dirname, sourceDataPath));
   const reviewData = JSON.parse(jsonData);
+
+  const userReview = reviewData.TotalReviewItems.Items.find(
+    (item) => item.MemberID === loginUser.id
+  );
+  if (userReview) {
+    return res.status(400).json({
+      success: false,
+      message: '실관람평이 존재합니다. 확인해주세요.',
+    });
+  }
 
   const reviewId = getRandomInt(10000000, 1000000000);
 
@@ -185,12 +207,6 @@ exports.editReview = (req, res, next) => {
 
   targetReview.ReviewText = reviewText;
   targetReview.Evaluation = evaluation;
-  targetReview.RegistDate = new Date()
-    .toISOString()
-    .slice(0, 10)
-    .split('-')
-    .join('.');
-
   reviewData.ReviewCounts.MarkAvg = Math.floor(
     reviewData.TotalReviewItems.Items.reduce(
       (acc, review) => acc + review.Evaluation,

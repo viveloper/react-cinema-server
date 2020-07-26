@@ -75,9 +75,8 @@ exports.postReview = (req, res, next) => {
     MemberNickName: '',
   };
 
-  const reviewCount = reviewData.TotalReviewItems.Items.length;
-
   reviewData.TotalReviewItems.Items.unshift(newReview);
+  const reviewCount = reviewData.TotalReviewItems.Items.length;
   reviewData.TotalReviewItems.ItemCount = reviewCount;
   reviewData.ReviewCounts.RealReviewCount = reviewCount;
   reviewData.ReviewCounts.TotalReviewCount = reviewCount;
@@ -133,9 +132,7 @@ exports.deleteReview = (req, res, next) => {
 
   const idx = reviewData.TotalReviewItems.Items.indexOf(targetReview);
   reviewData.TotalReviewItems.Items.splice(idx, 1);
-
   const reviewCount = reviewData.TotalReviewItems.Items.length;
-
   reviewData.TotalReviewItems.ItemCount = reviewCount;
   reviewData.ReviewCounts.RealReviewCount = reviewCount;
   reviewData.ReviewCounts.TotalReviewCount = reviewCount;

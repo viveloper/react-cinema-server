@@ -72,13 +72,27 @@ exports.getSeats = (req, res, next) => {
 // @route   PUT /api/ticketing/seats
 // @access  Private
 exports.reserveSeats = (req, res, next) => {
-  const playDate = req.query.playDate;
-  const cinemaId = req.query.cinemaId;
-  const screenDivisionCode = req.query.screenDivisionCode;
-  const screenId = req.query.screenId;
-  const playSequence = req.query.playSequence;
-
-  const { seatNoList } = req.body;
+  const {
+    movieCode,
+    movieName,
+    posterUrl,
+    viewGradeCode,
+    divisionCode,
+    detailDivisionCode,
+    cinemaId,
+    cinemaName,
+    screenId,
+    screenName,
+    screenDivisionCode,
+    screenDivisionName,
+    playSequence,
+    playDate,
+    playDay,
+    startTime,
+    endTime,
+    seatNoList,
+    price,
+  } = req.body;
 
   const loginUser = req.user;
 
@@ -109,6 +123,21 @@ exports.reserveSeats = (req, res, next) => {
     JSON.stringify(seatsData)
   );
 
+  // PlaySequence data update
+  const playSeqsDataPath = `../data/ticketing/playSeqs/playSeqs-${playDate}-${divisionCode}-${detailDivisionCode}-${cinemaId}.json`;
+  const jsonPlaySeqsData = fs.readFileSync(
+    path.resolve(__dirname, playSeqsDataPath)
+  );
+  const playSeqsData = JSON.parse(jsonPlaySeqsData);
+  const targetPlaySeqsData = playSeqsData.PlaySeqs.Items.find(
+    (item) => item.ScreenID === screenId && item.PlaySequence === playSequence
+  );
+  targetPlaySeqsData.BookingSeatCount -= seatNoList.length;
+  fs.writeFileSync(
+    path.resolve(__dirname, playSeqsDataPath),
+    JSON.stringify(playSeqsData)
+  );
+
   // User ticketing data update
   const jsonUserData = fs.readFileSync(
     path.resolve(__dirname, '../data/users/users.json')
@@ -119,12 +148,23 @@ exports.reserveSeats = (req, res, next) => {
   );
 
   const ticketingResult = {
-    playDate,
+    movieCode,
+    movieName,
+    posterUrl,
+    viewGradeCode,
     cinemaId,
-    screenDivisionCode,
+    cinemaName,
     screenId,
+    screenName,
+    screenDivisionCode,
+    screenDivisionName,
     playSequence,
+    playDate,
+    playDay,
+    startTime,
+    endTime,
     seatNoList,
+    price,
   };
 
   if (!targetUser.ticketing) {

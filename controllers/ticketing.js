@@ -167,7 +167,7 @@ exports.reserveSeats = (req, res, next) => {
     price,
   };
 
-  if (!targetUser.ticketing) {
+  if (!targetUser.ticketingList.length) {
     targetUser.ticketingList = [ticketingResult];
   } else {
     targetUser.ticketingList.push(ticketingResult);

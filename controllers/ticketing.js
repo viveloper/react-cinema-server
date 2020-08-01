@@ -129,6 +129,8 @@ exports.addUserTicketing = (req, res, next) => {
     movieName,
     posterUrl,
     viewGradeCode,
+    divisionCode,
+    detailDivisionCode,
     cinemaId,
     cinemaName,
     screenId,
@@ -218,5 +220,105 @@ exports.addUserTicketing = (req, res, next) => {
 
   res.status(200).json({
     userTicketing,
+  });
+};
+
+// @desc    Delete userTicketing
+// @route   DELETE /api/ticketing/userTicketing/:ticketingId
+// @access  Private
+exports.deleteUserTicketing = (req, res, next) => {
+  const ticketingId = parseInt(req.params.ticketingId);
+
+  const loginUser = req.user;
+
+  // User Ticketing Data Update
+  const jsonUserTicketingData = fs.readFileSync(
+    path.resolve(__dirname, '../data/ticketing/userTicketingData.json')
+  );
+  const userTicketingData = JSON.parse(jsonUserTicketingData);
+
+  const targetUserTicketing = userTicketingData.ticketingList.find(
+    (userTicketing) => userTicketing.ticketingId === ticketingId
+  );
+  userTicketingData.ticketingList = userTicketingData.ticketingList.filter(
+    (userTicketing) => userTicketing.ticketingId !== ticketingId
+  );
+
+  fs.writeFileSync(
+    path.resolve(__dirname, '../data/ticketing/userTicketingData.json'),
+    JSON.stringify(userTicketingData)
+  );
+
+  // Seats Data Update
+  const {
+    divisionCode,
+    detailDivisionCode,
+    cinemaId,
+    screenId,
+    screenDivisionCode,
+    playSequence,
+    playDate,
+    seatNoList,
+  } = targetUserTicketing;
+  const sourceDataPath = `../data/ticketing/seats/seatsInfo-${playDate}-${cinemaId}-${screenDivisionCode}-${screenId}-${playSequence}.json`;
+  const jsonSeatsData = fs.readFileSync(
+    path.resolve(__dirname, sourceDataPath)
+  );
+  const seatsData = JSON.parse(jsonSeatsData);
+
+  seatNoList.forEach((seatNo) => {
+    // Seats update
+    const targetSeat = seatsData.Seats.Items.find(
+      (seat) => seat.SeatNo === seatNo
+    );
+    targetSeat.SeatStatusCode = 0;
+
+    // BookingSeats update
+    const targetBookingSeatIdx = seatsData.BookingSeats.Items.findIndex(
+      (item) => item.SeatNo === seatNo
+    );
+    seatsData.BookingSeats.Items.splice(targetBookingSeatIdx, 1);
+  });
+
+  fs.writeFileSync(
+    path.resolve(__dirname, sourceDataPath),
+    JSON.stringify(seatsData)
+  );
+
+  // PlaySequence data update
+  const playSeqsDataPath = `../data/ticketing/playSeqs/playSeqs-${playDate}-${divisionCode}-${detailDivisionCode}-${cinemaId}.json`;
+  const jsonPlaySeqsData = fs.readFileSync(
+    path.resolve(__dirname, playSeqsDataPath)
+  );
+  const playSeqsData = JSON.parse(jsonPlaySeqsData);
+  const targetPlaySeqsData = playSeqsData.PlaySeqs.Items.find(
+    (item) => item.ScreenID === screenId && item.PlaySequence === playSequence
+  );
+  targetPlaySeqsData.BookingSeatCount += seatNoList.length;
+  fs.writeFileSync(
+    path.resolve(__dirname, playSeqsDataPath),
+    JSON.stringify(playSeqsData)
+  );
+
+  // User Data Update
+  const jsonUserData = fs.readFileSync(
+    path.resolve(__dirname, '../data/users/users.json')
+  );
+  const usersData = JSON.parse(jsonUserData);
+  const targetUser = usersData.users.find(
+    (user) => user.email === loginUser.email
+  );
+
+  const targetTicketingIdx = targetUser.ticketingList.indexOf(ticketingId);
+  targetUser.ticketingList.splice(targetTicketingIdx, 1);
+
+  fs.writeFileSync(
+    path.resolve(__dirname, '../data/users/users.json'),
+    JSON.stringify(usersData)
+  );
+
+  res.status(200).json({
+    success: true,
+    userTicketing: targetUserTicketing,
   });
 };

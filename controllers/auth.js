@@ -4,46 +4,62 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { getRandomInt } = require('../utils');
 
-// @desc    Register user
-// @route   POST /api/auth/register
+// @desc    Signin user
+// @route   POST /api/auth/signin
 // @access  Public
-exports.register = async (req, res, next) => {
-  const { name, email, password } = req.body;
+exports.signin = async (req, res, next) => {
+  const { name, email, password, confirmPassword } = req.body;
   const jsonData = fs.readFileSync(
     path.resolve(__dirname, '../data/users/users.json')
   );
   const usersData = JSON.parse(jsonData);
+
   if (usersData.users.find((user) => user.email === email)) {
-    res
-      .status(400)
-      .json({ success: false, message: '이미 가입된 이메일입니다.' });
-  } else {
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-    const id = getRandomInt(100000000, 1000000000).toString();
-    usersData.users.push({
+    return res.status(400).json({
+      success: false,
+      message: '이미 가입된 이메일입니다.',
+    });
+  }
+  if (password !== confirmPassword) {
+    return res.status(400).json({
+      success: false,
+      message: '두 비밀번호가 일치하지 않습니다.',
+    });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(password, salt);
+  const id = getRandomInt(100000000, 1000000000).toString();
+
+  usersData.users.push({
+    id,
+    name,
+    email,
+    password: hash,
+    reviewList: [],
+    reviewLikeList: [],
+    ticketingList: [],
+  });
+
+  fs.writeFileSync(
+    path.resolve(__dirname, '../data/users/users.json'),
+    JSON.stringify(usersData)
+  );
+
+  const token = getToken({ id, name, email });
+
+  res.status(200).json({
+    success: true,
+    token,
+    user: {
       id,
       name,
       email,
-      password: hash,
-    });
-    fs.writeFileSync(
-      path.resolve(__dirname, '../data/users/users.json'),
-      JSON.stringify(usersData)
-    );
-    const token = getToken({ id, name, email });
-    res.status(200).json({
-      success: true,
-      token,
-      user: {
-        name,
-        email,
-        reviewList: [],
-        reviewLikeList: [],
-        ticketingList: [],
-      },
-    });
-  }
+      reviewList: [],
+      reviewLikeList: [],
+      ticketingList: [],
+    },
+  });
 };
 
 // @desc    Login user
@@ -74,10 +90,12 @@ exports.login = async (req, res, next) => {
     });
 
   const token = getToken({ id: user.id, name: user.name, email: user.email });
+
   res.status(200).json({
     success: true,
     token,
     user: {
+      id: user.id,
       name: user.name,
       email: user.email,
       reviewList: user.reviewList,

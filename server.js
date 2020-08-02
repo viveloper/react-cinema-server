@@ -20,6 +20,7 @@ const ticketing = require('./routes/ticketing');
 const carousel = require('./routes/carousel');
 const specials = require('./routes/specials');
 const auth = require('./routes/auth');
+const user = require('./routes/user');
 
 // Mount routers
 app.use('/api/movies', movies);
@@ -28,6 +29,7 @@ app.use('/api/ticketing', ticketing);
 app.use('/api/carousel', carousel);
 app.use('/api/specials', specials);
 app.use('/api/auth', auth);
+app.use('/api/user', user);
 
 const PORT = process.env.PORT || 5000;
 

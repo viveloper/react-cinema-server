@@ -105,6 +105,15 @@ exports.login = async (req, res, next) => {
   });
 };
 
+// @desc    Logout user
+// @route   Get /api/auth/logout
+// @access  Private
+exports.logout = async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+  });
+};
+
 function getToken(payload) {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,

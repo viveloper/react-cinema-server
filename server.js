@@ -1,11 +1,15 @@
 const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
+const cors = require('cors');
 
 // Load env vars
 dotenv.config({ path: './config/config.env' });
 
 const app = express();
+
+// CORS
+app.use(cors());
 
 // Body parser
 app.use(express.json());

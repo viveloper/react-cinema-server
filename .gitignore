@@ -12,10 +12,10 @@
 /build
 
 # data files
-/data-downloader/data
-/data-downloader/media
-/public/media
-/data
+/backend/data-downloader/data
+/backend/data-downloader/media
+/backend/public/media
+/backend/data
 
 # misc
 .DS_Store
